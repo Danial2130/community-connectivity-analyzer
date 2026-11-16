@@ -40,12 +40,24 @@
 
     <main class="container app-main">
         <section class="panel panel--graph" id="graph" aria-labelledby="graph-title">
-            <div class="panel__header">
-                <h2 class="panel__title" id="graph-title">Visualisasi Jaringan</h2>
-                <p class="panel__description">
-                    Struktur hubungan antaranggota komunitas ditampilkan dalam bentuk graf.
-                </p>
+            <div class="panel__header panel__header--row">
+                <div class="panel__header-copy">
+                    <h2 class="panel__title" id="graph-title">Visualisasi Jaringan</h2>
+                    <p class="panel__description">
+                        Struktur hubungan antaranggota komunitas ditampilkan dalam bentuk graf.
+                    </p>
+                </div>
+                <div class="panel__actions">
+                    <button class="button button--secondary" id="load-sample-button" type="button">
+                        Muat Data Contoh
+                    </button>
+                    <button class="button button--danger" id="reset-button" type="button">
+                        Reset Data
+                    </button>
+                </div>
             </div>
+
+            <div class="message" id="data-message" role="status" aria-live="polite" hidden></div>
 
             <div class="graph-placeholder" id="graph-workspace">
                 <svg class="graph-placeholder__icon" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
@@ -76,16 +88,17 @@
                     <label class="field__label" for="member-name">Nama anggota</label>
                     <input class="field__control" type="text" id="member-name" name="name" placeholder="Contoh: Andi">
                 </div>
-                <button class="button button--primary" id="member-submit" type="submit" disabled>
+                <button class="button button--primary" id="member-submit" type="submit">
                     Tambahkan Anggota
                 </button>
-                <p class="form-note">Form belum aktif.</p>
+                <div class="message" id="member-message" role="status" aria-live="polite" hidden></div>
             </form>
 
-            <div class="empty-state" id="member-list">
+            <div class="empty-state" id="member-empty">
                 <p class="empty-state__title">Belum ada anggota</p>
                 <p class="empty-state__text">Daftar anggota yang ditambahkan akan muncul di sini.</p>
             </div>
+            <ul class="entity-list" id="member-list" hidden></ul>
         </section>
 
         <section class="panel" id="relationships" aria-labelledby="relationships-title">
@@ -99,26 +112,27 @@
             <form class="form" id="relationship-form">
                 <div class="field">
                     <label class="field__label" for="relationship-source">Anggota pertama</label>
-                    <select class="field__control" id="relationship-source" name="source" disabled>
+                    <select class="field__control" id="relationship-source" name="source">
                         <option value="">Belum ada anggota</option>
                     </select>
                 </div>
                 <div class="field">
                     <label class="field__label" for="relationship-target">Anggota kedua</label>
-                    <select class="field__control" id="relationship-target" name="target" disabled>
+                    <select class="field__control" id="relationship-target" name="target">
                         <option value="">Belum ada anggota</option>
                     </select>
                 </div>
-                <button class="button button--primary" id="relationship-submit" type="submit" disabled>
+                <button class="button button--primary" id="relationship-submit" type="submit">
                     Tambahkan Hubungan
                 </button>
-                <p class="form-note">Form belum aktif.</p>
+                <div class="message" id="relationship-message" role="status" aria-live="polite" hidden></div>
             </form>
 
-            <div class="empty-state" id="relationship-list">
+            <div class="empty-state" id="relationship-empty">
                 <p class="empty-state__title">Belum ada hubungan</p>
                 <p class="empty-state__text">Daftar hubungan antaranggota akan muncul di sini.</p>
             </div>
+            <ul class="entity-list" id="relationship-list" hidden></ul>
         </section>
 
         <section class="panel" id="analysis" aria-labelledby="analysis-title">
@@ -198,5 +212,8 @@
             </div>
         </section>
     </main>
+
+    <script src="{{ url_for('static', filename='js/storage.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
