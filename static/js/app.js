@@ -30,6 +30,11 @@ const state = {
 
 const elements = {};
 
+let analysisRequestId = 0;
+let pathRequestId = 0;
+let isAnalyzing = false;
+let isFindingPath = false;
+
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
@@ -50,6 +55,28 @@ function init() {
     elements.resetButton = document.getElementById("reset-button");
     elements.dataMessage = document.getElementById("data-message");
 
+    elements.analyzeButton = document.getElementById("analyze-button");
+    elements.analysisMessage = document.getElementById("analysis-message");
+    elements.analysisNote = document.getElementById("analysis-note");
+    elements.statVertexCount = document.getElementById("stat-vertex-count");
+    elements.statEdgeCount = document.getElementById("stat-edge-count");
+    elements.statComponentCount = document.getElementById("stat-component-count");
+    elements.statIsolatedCount = document.getElementById("stat-isolated-count");
+    elements.degreeSummary = document.getElementById("degree-summary");
+    elements.highestDegree = document.getElementById("highest-degree");
+    elements.lowestDegree = document.getElementById("lowest-degree");
+    elements.degreeList = document.getElementById("degree-list");
+    elements.isolatedList = document.getElementById("isolated-list");
+    elements.componentList = document.getElementById("component-list");
+
+    elements.pathForm = document.getElementById("shortest-path-form");
+    elements.pathStart = document.getElementById("path-start");
+    elements.pathEnd = document.getElementById("path-end");
+    elements.pathSubmit = document.getElementById("path-submit");
+    elements.pathMessage = document.getElementById("path-message");
+    elements.pathNote = document.getElementById("path-note");
+    elements.pathResult = document.getElementById("path-result");
+
     bindEvents();
     restoreState();
     renderAll();
@@ -60,6 +87,11 @@ function bindEvents() {
     elements.relationshipForm.addEventListener("submit", handleAddRelationship);
     elements.loadSampleButton.addEventListener("click", handleLoadSample);
     elements.resetButton.addEventListener("click", handleReset);
+
+    elements.analyzeButton.addEventListener("click", handleAnalyze);
+    elements.pathForm.addEventListener("submit", handleShortestPath);
+    elements.pathStart.addEventListener("change", handlePathSelectionChange);
+    elements.pathEnd.addEventListener("change", handlePathSelectionChange);
 }
 
 // ---------------------------------------------------------------------------
@@ -145,6 +177,7 @@ function handleAddMember(event) {
     state.vertices.push({ id: id, name: name });
     state.nextIdIndex += 1;
 
+    handleGraphChanged();
     persistState();
     renderAll();
 
@@ -173,6 +206,7 @@ function handleDeleteMember(id) {
         (edge) => edge.source !== id && edge.target !== id
     );
 
+    handleGraphChanged();
     persistState();
     renderAll();
 
@@ -221,6 +255,7 @@ function handleAddRelationship(event) {
 
     state.edges.push({ source: source, target: target });
 
+    handleGraphChanged();
     persistState();
     elements.relationshipSource.value = "";
     elements.relationshipTarget.value = "";
@@ -246,6 +281,7 @@ function handleDeleteRelationship(index) {
 
     state.edges.splice(index, 1);
 
+    handleGraphChanged();
     persistState();
     renderRelationships();
     renderRelationshipOptions();
@@ -288,6 +324,7 @@ function handleLoadSample() {
     state.edges = SAMPLE_GRAPH.edges.map((edge) => ({ ...edge }));
     state.nextIdIndex = SAMPLE_GRAPH.nextIdIndex;
 
+    handleGraphChanged();
     persistState();
     renderAll();
 
@@ -310,6 +347,7 @@ function handleReset() {
     state.edges = [];
     state.nextIdIndex = 0;
 
+    handleGraphChanged();
     persistState();
     renderAll();
 
@@ -327,6 +365,7 @@ function renderAll() {
     renderMembers();
     renderRelationships();
     renderRelationshipOptions();
+    renderShortestPathOptions();
 }
 
 function renderMembers() {
@@ -414,6 +453,14 @@ function renderRelationshipOptions() {
     );
 }
 
+function renderShortestPathOptions() {
+    const placeholder = state.vertices.length === 0 ? "Belum ada anggota" : "Pilih anggota";
+
+    fillSelect(elements.pathStart, placeholder, elements.pathStart.value);
+    fillSelect(elements.pathEnd, placeholder, elements.pathEnd.value);
+    updateControls();
+}
+
 function fillSelect(selectElement, placeholderText, selectedValue) {
     selectElement.textContent = "";
 
@@ -441,6 +488,471 @@ function createDeleteButton(accessibilityLabel, onClick) {
     button.setAttribute("aria-label", accessibilityLabel);
     button.addEventListener("click", onClick);
     return button;
+}
+
+// ---------------------------------------------------------------------------
+// Integrasi API: analisis dan shortest path
+// ---------------------------------------------------------------------------
+
+async function handleAnalyze() {
+    if (isAnalyzing) {
+        return;
+    }
+
+    const requestId = analysisRequestId + 1;
+    analysisRequestId = requestId;
+    isAnalyzing = true;
+
+    resetAnalysisView();
+    updateControls();
+    elements.analyzeButton.textContent = "Menganalisis...";
+    elements.analyzeButton.setAttribute("aria-busy", "true");
+    showMessage(
+        elements.analysisMessage,
+        "Menghubungi server untuk menganalisis graf...",
+        "info"
+    );
+
+    try {
+        const data = await requestAnalysis(
+            state.vertices.map((vertex) => ({ ...vertex })),
+            state.edges.map((edge) => ({ ...edge }))
+        );
+
+        if (requestId !== analysisRequestId) {
+            return;
+        }
+
+        renderAnalysis(data);
+        showMessage(elements.analysisMessage, "Analisis selesai.", "success");
+    } catch (error) {
+        if (requestId !== analysisRequestId) {
+            return;
+        }
+
+        resetAnalysisView();
+        showMessage(
+            elements.analysisMessage,
+            getClientErrorMessage(error),
+            "error"
+        );
+    } finally {
+        if (requestId === analysisRequestId) {
+            isAnalyzing = false;
+            elements.analyzeButton.textContent = "Jalankan Analisis";
+            elements.analyzeButton.removeAttribute("aria-busy");
+            updateControls();
+        }
+    }
+}
+
+async function handleShortestPath(event) {
+    event.preventDefault();
+
+    if (isFindingPath) {
+        return;
+    }
+
+    const start = elements.pathStart.value;
+    const end = elements.pathEnd.value;
+
+    if (start === "" || end === "") {
+        showMessage(
+            elements.pathMessage,
+            "Pilih anggota awal dan anggota tujuan terlebih dahulu.",
+            "error"
+        );
+        return;
+    }
+
+    const requestId = pathRequestId + 1;
+    pathRequestId = requestId;
+    isFindingPath = true;
+
+    resetPathView();
+    updateControls();
+    elements.pathSubmit.textContent = "Mencari...";
+    elements.pathSubmit.setAttribute("aria-busy", "true");
+    showMessage(
+        elements.pathMessage,
+        "Mencari jalur terpendek...",
+        "info"
+    );
+
+    try {
+        const data = await requestShortestPath(
+            state.vertices.map((vertex) => ({ ...vertex })),
+            state.edges.map((edge) => ({ ...edge })),
+            start,
+            end
+        );
+
+        if (requestId !== pathRequestId) {
+            return;
+        }
+
+        renderPathResult(data, start, end);
+        hideMessage(elements.pathMessage);
+    } catch (error) {
+        if (requestId !== pathRequestId) {
+            return;
+        }
+
+        resetPathView();
+        showMessage(
+            elements.pathMessage,
+            getClientErrorMessage(error),
+            "error"
+        );
+    } finally {
+        if (requestId === pathRequestId) {
+            isFindingPath = false;
+            elements.pathSubmit.textContent = "Cari Jalur";
+            elements.pathSubmit.removeAttribute("aria-busy");
+            updateControls();
+        }
+    }
+}
+
+function handlePathSelectionChange() {
+    if (isFindingPath) {
+        return;
+    }
+
+    resetPathView();
+}
+
+// Membatalkan hasil lama ketika data graf berubah. Request yang masih
+// berjalan akan diabaikan karena nomor request sudah berubah.
+function handleGraphChanged() {
+    analysisRequestId += 1;
+    pathRequestId += 1;
+    isAnalyzing = false;
+    isFindingPath = false;
+
+    elements.analyzeButton.textContent = "Jalankan Analisis";
+    elements.analyzeButton.removeAttribute("aria-busy");
+    elements.pathSubmit.textContent = "Cari Jalur";
+    elements.pathSubmit.removeAttribute("aria-busy");
+
+    resetAnalysisView();
+    resetPathView();
+    updateControls();
+}
+
+function updateControls() {
+    const hasVertices = state.vertices.length > 0;
+
+    elements.analyzeButton.disabled = !hasVertices || isAnalyzing;
+    elements.pathStart.disabled = !hasVertices || isFindingPath;
+    elements.pathEnd.disabled = !hasVertices || isFindingPath;
+    elements.pathSubmit.disabled = !hasVertices || isFindingPath;
+
+    if (hasVertices) {
+        elements.analysisNote.textContent =
+            "Data graf akan dikirim ke server saat analisis dijalankan.";
+        elements.pathNote.textContent =
+            "Pilih dua anggota, termasuk anggota yang sama.";
+    } else {
+        elements.analysisNote.textContent =
+            "Tambahkan minimal satu anggota untuk menjalankan analisis.";
+        elements.pathNote.textContent =
+            "Tambahkan minimal satu anggota untuk mencari jalur.";
+    }
+}
+
+function getClientErrorMessage(error) {
+    if (
+        error !== null &&
+        typeof error === "object" &&
+        typeof error.message === "string" &&
+        error.message !== ""
+    ) {
+        return error.message;
+    }
+
+    return "Terjadi kesalahan yang tidak diketahui.";
+}
+
+function renderAnalysis(data) {
+    const isolatedMembers = Array.isArray(data.isolated_members)
+        ? data.isolated_members
+        : [];
+    const components = Array.isArray(data.components) ? data.components : [];
+
+    elements.statVertexCount.textContent = String(data.vertex_count);
+    elements.statEdgeCount.textContent = String(data.edge_count);
+    elements.statComponentCount.textContent = String(data.component_count);
+    elements.statIsolatedCount.textContent = String(isolatedMembers.length);
+
+    renderDegreeSummary(data.highest_degree, data.lowest_degree);
+    renderDegreeList(data.degrees);
+    renderIsolatedMembers(isolatedMembers);
+    renderComponents(components);
+}
+
+function renderDegreeSummary(highest, lowest) {
+    if (highest === null || lowest === null) {
+        elements.degreeSummary.hidden = true;
+        elements.highestDegree.textContent = "\u2014";
+        elements.lowestDegree.textContent = "\u2014";
+        return;
+    }
+
+    elements.highestDegree.textContent = formatDegreeSummary(highest);
+    elements.lowestDegree.textContent = formatDegreeSummary(lowest);
+    elements.degreeSummary.hidden = false;
+}
+
+function formatDegreeSummary(summary) {
+    if (
+        summary === null ||
+        typeof summary !== "object" ||
+        !Array.isArray(summary.members)
+    ) {
+        return "\u2014";
+    }
+
+    const members = summary.members.map(formatMemberLabel).join(", ");
+    return members + " \u2014 " + summary.value + " koneksi";
+}
+
+function renderDegreeList(degrees) {
+    if (
+        state.vertices.length === 0 ||
+        degrees === null ||
+        typeof degrees !== "object" ||
+        Array.isArray(degrees)
+    ) {
+        renderEmptyState(
+            elements.degreeList,
+            "Belum ada hasil",
+            "Jumlah koneksi setiap anggota akan ditampilkan setelah analisis dijalankan."
+        );
+        return;
+    }
+
+    elements.degreeList.className = "degree-list";
+    elements.degreeList.textContent = "";
+
+    for (const vertex of state.vertices) {
+        const degree = degrees[vertex.id];
+        const item = document.createElement("div");
+        item.className = "degree-item";
+
+        const main = document.createElement("div");
+        main.className = "degree-item__main";
+
+        const badge = document.createElement("span");
+        badge.className = "entity__badge";
+        badge.textContent = vertex.id;
+
+        const name = document.createElement("span");
+        name.className = "entity__name";
+        name.textContent = vertex.name;
+
+        const value = document.createElement("span");
+        value.className = "degree-item__value";
+        value.textContent = degree === undefined
+            ? "\u2014"
+            : degree + " koneksi";
+
+        main.append(badge, name);
+        item.append(main, value);
+        elements.degreeList.append(item);
+    }
+}
+
+function renderIsolatedMembers(memberIds) {
+    elements.isolatedList.textContent = "";
+
+    if (memberIds.length === 0) {
+        renderEmptyState(
+            elements.isolatedList,
+            "Tidak ada anggota terisolasi",
+            "Semua anggota memiliki minimal satu hubungan."
+        );
+        return;
+    }
+
+    elements.isolatedList.className = "member-chips";
+
+    for (const memberId of memberIds) {
+        const chip = document.createElement("span");
+        chip.className = "member-chip";
+        chip.textContent = formatMemberLabel(memberId);
+        elements.isolatedList.append(chip);
+    }
+}
+
+function renderComponents(components) {
+    elements.componentList.textContent = "";
+
+    if (components.length === 0) {
+        renderEmptyState(
+            elements.componentList,
+            "Tidak ada komponen",
+            "Belum ada anggota yang dapat dikelompokkan."
+        );
+        return;
+    }
+
+    elements.componentList.className = "component-list";
+
+    components.forEach((memberIds, index) => {
+        const card = document.createElement("article");
+        card.className = "component-card";
+
+        const title = document.createElement("h4");
+        title.className = "component-card__title";
+        title.textContent =
+            "Kelompok " + (index + 1) + " (" + memberIds.length + " anggota)";
+
+        const members = document.createElement("p");
+        members.className = "component-card__members";
+        members.textContent = memberIds.map(formatMemberLabel).join(", ");
+
+        card.append(title, members);
+        elements.componentList.append(card);
+    });
+}
+
+function renderPathResult(result, start, end) {
+    elements.pathResult.textContent = "";
+    elements.pathResult.className = "path-result";
+
+    if (
+        result === null ||
+        typeof result !== "object" ||
+        result.found !== true
+    ) {
+        const title = document.createElement("p");
+        title.className = "path-result__title";
+        title.textContent = "Jalur tidak ditemukan";
+
+        const text = document.createElement("p");
+        text.className = "path-result__text";
+        text.textContent =
+            formatMemberLabel(start) + " dan " + formatMemberLabel(end) +
+            " tidak terhubung dalam jaringan saat ini.";
+
+        elements.pathResult.append(title, text);
+        return;
+    }
+
+    const title = document.createElement("p");
+    title.className = "path-result__title";
+    title.textContent = "Jalur ditemukan";
+
+    const steps = document.createElement("div");
+    steps.className = "path-steps";
+
+    const path = Array.isArray(result.path) ? result.path : [];
+
+    path.forEach((memberId, index) => {
+        if (index > 0) {
+            const arrow = document.createElement("span");
+            arrow.className = "path-arrow";
+            arrow.textContent = "\u2192";
+            arrow.setAttribute("aria-hidden", "true");
+            steps.append(arrow);
+        }
+
+        const step = document.createElement("span");
+        step.className = "path-step";
+
+        const badge = document.createElement("span");
+        badge.className = "path-step__badge";
+        badge.textContent = memberId;
+
+        const name = document.createElement("span");
+        name.className = "path-step__name";
+        const vertex = findVertex(memberId);
+        name.textContent = vertex === null ? memberId : vertex.name;
+
+        step.append(badge, name);
+        steps.append(step);
+    });
+
+    const distance = document.createElement("p");
+    distance.className = "path-distance";
+
+    if (result.distance === 0) {
+        distance.textContent =
+            "Anggota awal dan tujuan sama. Jarak: 0 hubungan.";
+    } else {
+        distance.textContent = "Jarak: " + result.distance + " hubungan.";
+    }
+
+    elements.pathResult.append(title, steps, distance);
+}
+
+function resetAnalysisView() {
+    elements.statVertexCount.textContent = "\u2014";
+    elements.statEdgeCount.textContent = "\u2014";
+    elements.statComponentCount.textContent = "\u2014";
+    elements.statIsolatedCount.textContent = "\u2014";
+
+    elements.degreeSummary.hidden = true;
+    elements.highestDegree.textContent = "\u2014";
+    elements.lowestDegree.textContent = "\u2014";
+
+    renderEmptyState(
+        elements.degreeList,
+        null,
+        "Jumlah koneksi setiap anggota akan ditampilkan setelah analisis dijalankan."
+    );
+    renderEmptyState(
+        elements.isolatedList,
+        null,
+        "Anggota tanpa hubungan akan ditampilkan di sini."
+    );
+    renderEmptyState(
+        elements.componentList,
+        null,
+        "Kelompok anggota yang saling terhubung akan ditampilkan di sini."
+    );
+
+    hideMessage(elements.analysisMessage);
+}
+
+function resetPathView() {
+    elements.pathResult.className = "empty-state";
+    elements.pathResult.textContent = "";
+
+    const title = document.createElement("p");
+    title.className = "empty-state__title";
+    title.textContent = "Belum ada hasil";
+
+    const text = document.createElement("p");
+    text.className = "empty-state__text";
+    text.textContent =
+        "Jalur, urutan anggota, dan jarak akan ditampilkan di sini.";
+
+    elements.pathResult.append(title, text);
+    hideMessage(elements.pathMessage);
+}
+
+function renderEmptyState(container, titleText, messageText) {
+    container.className = "empty-state empty-state--compact";
+    container.textContent = "";
+
+    if (titleText !== null) {
+        const title = document.createElement("p");
+        title.className = "empty-state__title";
+        title.textContent = titleText;
+        container.append(title);
+    }
+
+    const message = document.createElement("p");
+    message.className = "empty-state__text";
+    message.textContent = messageText;
+    container.append(message);
+}
+
+function formatMemberLabel(memberId) {
+    const vertex = findVertex(memberId);
+    return vertex === null ? memberId : vertex.name + " (" + memberId + ")";
 }
 
 // ---------------------------------------------------------------------------

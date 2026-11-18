@@ -136,24 +136,24 @@
 
 ### Tasks
 
-- [ ] Membuat routes/graph_routes.py.
-- [ ] Membuat endpoint POST /api/analyze.
-- [ ] Membuat endpoint POST /api/shortest-path.
-- [ ] Membuat validasi struktur JSON.
-- [ ] Membuat validasi ID anggota.
-- [ ] Membuat validasi relasi.
-- [ ] Membuat format response JSON yang konsisten.
-- [ ] Membuat error handling.
-- [ ] Menghubungkan endpoint dengan modul graph/algorithms.py.
+- [x] Membuat routes/graph_routes.py.
+- [x] Membuat endpoint POST /api/analyze.
+- [x] Membuat endpoint POST /api/shortest-path.
+- [x] Membuat validasi struktur JSON.
+- [x] Membuat validasi ID anggota.
+- [x] Membuat validasi relasi.
+- [x] Membuat format response JSON yang konsisten.
+- [x] Membuat error handling.
+- [x] Menghubungkan endpoint dengan modul graph/algorithms.py.
 
 ### Acceptance Criteria
 
-- API dapat menerima data graf melalui JSON.
-- API dapat mengembalikan hasil analisis.
-- API dapat mencari shortest path.
-- Data tidak valid menghasilkan HTTP 400.
-- Kesalahan internal tidak membocorkan traceback kepada pengguna.
-- Backend tidak menyimpan data graf secara permanen.
+- [x] API dapat menerima data graf melalui JSON.
+- [x] API dapat mengembalikan hasil analisis.
+- [x] API dapat mencari shortest path.
+- [x] Data tidak valid menghasilkan HTTP 400.
+- [x] Kesalahan internal tidak membocorkan traceback kepada pengguna.
+- [x] Backend tidak menyimpan data graf secara permanen.
 
 ---
 
@@ -163,23 +163,23 @@
 
 ### Tasks
 
-- [ ] Membuat static/js/api.js.
-- [ ] Membuat fungsi request ke endpoint analisis.
-- [ ] Mengirim data graf ke backend.
-- [ ] Menampilkan hasil Degree.
-- [ ] Menampilkan daftar anggota terisolasi.
-- [ ] Menampilkan Connected Components.
-- [ ] Membuat pemilihan anggota untuk shortest path.
-- [ ] Menampilkan jalur yang ditemukan.
-- [ ] Menampilkan pesan ketika jalur tidak tersedia.
-- [ ] Menampilkan loading dan error state.
+- [x] Membuat static/js/api.js.
+- [x] Membuat fungsi request ke endpoint analisis.
+- [x] Mengirim data graf ke backend.
+- [x] Menampilkan hasil Degree.
+- [x] Menampilkan daftar anggota terisolasi.
+- [x] Menampilkan Connected Components.
+- [x] Membuat pemilihan anggota untuk shortest path.
+- [x] Menampilkan jalur yang ditemukan.
+- [x] Menampilkan pesan ketika jalur tidak tersedia.
+- [x] Menampilkan loading dan error state.
 
 ### Acceptance Criteria
 
-- Frontend berhasil berkomunikasi dengan backend.
-- Hasil analisis sesuai dengan data yang dimasukkan.
-- Pesan kesalahan ditampilkan dengan jelas.
-- Tidak diperlukan input ulang untuk menjalankan analisis.
+- [x] Frontend berhasil berkomunikasi dengan backend.
+- [x] Hasil analisis sesuai dengan data yang dimasukkan.
+- [x] Pesan kesalahan ditampilkan dengan jelas.
+- [x] Tidak diperlukan input ulang untuk menjalankan analisis.
 
 ---
 

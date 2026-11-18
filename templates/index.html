@@ -143,6 +143,8 @@
                 </p>
             </div>
 
+            <div class="message" id="analysis-message" role="status" aria-live="polite" hidden></div>
+
             <dl class="stats">
                 <div class="stat">
                     <dt class="stat__label">Total Anggota</dt>
@@ -164,6 +166,16 @@
 
             <div class="analysis-detail">
                 <h3 class="analysis-detail__title">Rincian Degree</h3>
+                <div class="analysis-summary" id="degree-summary" hidden>
+                    <p class="analysis-summary__item">
+                        <span class="analysis-summary__label">Koneksi terbanyak</span>
+                        <span class="analysis-summary__value" id="highest-degree">&mdash;</span>
+                    </p>
+                    <p class="analysis-summary__item">
+                        <span class="analysis-summary__label">Koneksi paling sedikit</span>
+                        <span class="analysis-summary__value" id="lowest-degree">&mdash;</span>
+                    </p>
+                </div>
                 <div class="empty-state empty-state--compact" id="degree-list">
                     <p class="empty-state__text">
                         Jumlah koneksi setiap anggota akan ditampilkan setelah analisis dijalankan.
@@ -171,10 +183,30 @@
                 </div>
             </div>
 
+            <div class="analysis-detail">
+                <h3 class="analysis-detail__title">Anggota Terisolasi</h3>
+                <div class="empty-state empty-state--compact" id="isolated-list">
+                    <p class="empty-state__text">
+                        Anggota tanpa hubungan akan ditampilkan di sini.
+                    </p>
+                </div>
+            </div>
+
+            <div class="analysis-detail">
+                <h3 class="analysis-detail__title">Connected Components</h3>
+                <div class="empty-state empty-state--compact" id="component-list">
+                    <p class="empty-state__text">
+                        Kelompok anggota yang saling terhubung akan ditampilkan di sini.
+                    </p>
+                </div>
+            </div>
+
             <button class="button button--primary" id="analyze-button" type="button" disabled>
                 Jalankan Analisis
             </button>
-            <p class="form-note">Analisis belum aktif.</p>
+            <p class="form-note" id="analysis-note">
+                Tambahkan anggota untuk menjalankan analisis.
+            </p>
         </section>
 
         <section class="panel" id="shortest-path" aria-labelledby="shortest-path-title">
@@ -201,10 +233,14 @@
                 <button class="button button--primary" id="path-submit" type="submit" disabled>
                     Cari Jalur
                 </button>
-                <p class="form-note">Pencarian jalur belum aktif.</p>
+                <p class="form-note" id="path-note">
+                    Tambahkan anggota untuk mencari jalur.
+                </p>
             </form>
 
-            <div class="empty-state" id="path-result">
+            <div class="message" id="path-message" role="status" aria-live="polite" hidden></div>
+
+            <div class="empty-state" id="path-result" role="status" aria-live="polite">
                 <p class="empty-state__title">Belum ada hasil</p>
                 <p class="empty-state__text">
                     Jalur, urutan anggota, dan jarak akan ditampilkan di sini.
@@ -214,6 +250,7 @@
     </main>
 
     <script src="{{ url_for('static', filename='js/storage.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

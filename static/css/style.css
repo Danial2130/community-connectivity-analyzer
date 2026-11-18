@@ -531,6 +531,189 @@ body {
     font-weight: 600;
 }
 
+.analysis-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.analysis-summary__item {
+    margin: 0;
+    padding: 10px 12px;
+    background-color: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.analysis-summary__label {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.analysis-summary__value {
+    display: block;
+    margin-top: 2px;
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.degree-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.degree-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.degree-item__main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.degree-item__value {
+    flex: 0 0 auto;
+    color: var(--color-text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.member-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.member-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    color: #9a3412;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    overflow-wrap: anywhere;
+}
+
+.component-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.component-card {
+    padding: 10px 12px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.component-card__title {
+    margin: 0 0 2px;
+    color: var(--color-text-secondary);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.component-card__members {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+}
+
+.path-result {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background-color: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.path-result__title {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.path-result__text {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.84rem;
+}
+
+.path-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.path-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.82rem;
+}
+
+.path-step__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    color: var(--color-primary-dark);
+    font-size: 0.7rem;
+    font-weight: 700;
+    background-color: var(--color-primary-soft);
+    border-radius: 999px;
+}
+
+.path-step__name {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+.path-arrow {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.path-distance {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
 /* --------------------------------------------------------------------------
    Responsif
    -------------------------------------------------------------------------- */
@@ -600,6 +783,16 @@ body {
 
     .panel__actions .button {
         flex: 1 1 140px;
+    }
+}
+
+@media (max-width: 640px) {
+    .analysis-summary {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .degree-item {
+        align-items: flex-start;
     }
 }
 
