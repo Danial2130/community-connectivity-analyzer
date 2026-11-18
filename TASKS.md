@@ -92,12 +92,12 @@
 
 ### Acceptance Criteria
 
-- Anggota dapat ditambahkan dan dihapus.
-- Relasi dapat ditambahkan dan dihapus.
-- Data graf selalu konsisten.
-- Validasi mencegah data tidak valid.
-- Sample data dapat dimuat.
-- Data dapat dipertahankan setelah halaman dimuat ulang pada browser yang sama.
+- [x] Anggota dapat ditambahkan dan dihapus.
+- [x] Relasi dapat ditambahkan dan dihapus.
+- [x] Data graf selalu konsisten.
+- [x] Validasi mencegah data tidak valid.
+- [x] Sample data dapat dimuat.
+- [x] Data dapat dipertahankan setelah halaman dimuat ulang pada browser yang sama.
 
 ---
 
@@ -121,12 +121,12 @@
 
 ### Acceptance Criteria
 
-- Degree seluruh anggota dihitung dengan benar.
-- Anggota dengan degree 0 dapat diidentifikasi.
-- Connected Components memberikan kelompok yang benar.
-- BFS memberikan jalur terpendek berdasarkan jumlah sisi.
-- Algoritma bekerja tanpa menggunakan library graf siap pakai.
-- Kompleksitas DFS dan BFS adalah O(V + E).
+- [x] Degree seluruh anggota dihitung dengan benar.
+- [x] Anggota dengan degree 0 dapat diidentifikasi.
+- [x] Connected Components memberikan kelompok yang benar.
+- [x] BFS memberikan jalur terpendek berdasarkan jumlah sisi.
+- [x] Algoritma bekerja tanpa menggunakan library graf siap pakai.
+- [x] Kompleksitas DFS dan BFS adalah O(V + E).
 
 ---
 
