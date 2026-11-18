@@ -380,15 +380,11 @@ function renderMembers() {
         const main = document.createElement("div");
         main.className = "entity__main";
 
-        const badge = document.createElement("span");
-        badge.className = "entity__badge";
-        badge.textContent = vertex.id;
-
         const name = document.createElement("span");
         name.className = "entity__name";
         name.textContent = vertex.name;
 
-        main.append(badge, name);
+        main.append(name);
         item.append(main, createDeleteButton(
             "Hapus anggota " + vertex.name,
             () => handleDeleteMember(vertex.id)
@@ -769,7 +765,7 @@ function renderIsolatedMembers(memberIds) {
     if (memberIds.length === 0) {
         renderEmptyState(
             elements.isolatedList,
-            "Tidak ada anggota terisolasi",
+            "Tidak ada anggota yang belum terhubung",
             "Semua anggota memiliki minimal satu hubungan."
         );
         return;
@@ -905,7 +901,7 @@ function resetAnalysisView() {
     renderEmptyState(
         elements.isolatedList,
         null,
-        "Anggota tanpa hubungan akan ditampilkan di sini."
+        "Anggota yang belum terhubung akan ditampilkan di sini."
     );
     renderEmptyState(
         elements.componentList,
