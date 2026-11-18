@@ -255,6 +255,58 @@ body {
     font-size: 0.875rem;
 }
 
+.graph-stage {
+    position: relative;
+}
+
+.graph-canvas {
+    width: 100%;
+    height: 360px;
+    background-color: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.graph-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+}
+
+.graph-legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.graph-legend__swatch {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.graph-legend__swatch--component {
+    background: linear-gradient(135deg, #e0e7ff 0%, #dcfce7 50%, #fef3c7 100%);
+    border-color: var(--color-border-strong);
+}
+
+.graph-legend__swatch--isolated {
+    background-color: #fff7ed;
+    border: 2px dashed #f97316;
+}
+
+.graph-legend__swatch--path {
+    background-color: #ccfbf1;
+    border-color: #0f766e;
+}
+
 /* --------------------------------------------------------------------------
    Form
    -------------------------------------------------------------------------- */
@@ -771,6 +823,10 @@ body {
     .graph-placeholder {
         min-height: 260px;
         padding: 24px 16px;
+    }
+
+    .graph-canvas {
+        height: 280px;
     }
 
     .panel__header--row {

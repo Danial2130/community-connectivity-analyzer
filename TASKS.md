@@ -189,24 +189,24 @@
 
 ### Tasks
 
-- [ ] Mengintegrasikan Cytoscape.js.
-- [ ] Membuat representasi vertices menjadi nodes.
-- [ ] Membuat representasi edges menjadi connections.
-- [ ] Menampilkan label nama anggota.
-- [ ] Mengatur layout graf secara otomatis.
-- [ ] Memberikan penanda visual pada anggota terisolasi.
-- [ ] Memberikan penanda visual pada kelompok berbeda.
-- [ ] Menyorot shortest path.
-- [ ] Memperbarui visualisasi ketika data berubah.
+- [x] Mengintegrasikan Cytoscape.js.
+- [x] Membuat representasi vertices menjadi nodes.
+- [x] Membuat representasi edges menjadi connections.
+- [x] Menampilkan label nama anggota.
+- [x] Mengatur layout graf secara otomatis.
+- [x] Memberikan penanda visual pada anggota terisolasi.
+- [x] Memberikan penanda visual pada kelompok berbeda.
+- [x] Menyorot shortest path.
+- [x] Memperbarui visualisasi ketika data berubah.
 
 ### Acceptance Criteria
 
-- Semua anggota muncul sebagai nodes.
-- Semua relasi muncul sebagai edges.
-- Graf diperbarui ketika data berubah.
-- Anggota terisolasi mudah dikenali.
-- Jalur terpendek dapat dibedakan secara visual.
-- Visualisasi tidak menjalankan algoritma analisis utama.
+- [x] Semua anggota muncul sebagai nodes.
+- [x] Semua relasi muncul sebagai edges.
+- [x] Graf diperbarui ketika data berubah.
+- [x] Anggota terisolasi mudah dikenali.
+- [x] Jalur terpendek dapat dibedakan secara visual.
+- [x] Visualisasi tidak menjalankan algoritma analisis utama.
 
 ---
 

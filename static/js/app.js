@@ -77,6 +77,8 @@ function init() {
     elements.pathNote = document.getElementById("path-note");
     elements.pathResult = document.getElementById("path-result");
 
+    initGraph();
+
     bindEvents();
     restoreState();
     renderAll();
@@ -259,8 +261,7 @@ function handleAddRelationship(event) {
     persistState();
     elements.relationshipSource.value = "";
     elements.relationshipTarget.value = "";
-    renderRelationships();
-    renderRelationshipOptions();
+    renderAll();
 
     showMessage(
         elements.relationshipMessage,
@@ -283,8 +284,7 @@ function handleDeleteRelationship(index) {
 
     handleGraphChanged();
     persistState();
-    renderRelationships();
-    renderRelationshipOptions();
+    renderAll();
 
     if (sourceVertex !== null && targetVertex !== null) {
         showMessage(
@@ -366,6 +366,7 @@ function renderAll() {
     renderRelationships();
     renderRelationshipOptions();
     renderShortestPathOptions();
+    updateGraph(state.vertices, state.edges);
 }
 
 function renderMembers() {
@@ -685,6 +686,7 @@ function renderAnalysis(data) {
     renderDegreeList(data.degrees);
     renderIsolatedMembers(isolatedMembers);
     renderComponents(components);
+    showAnalysisMarkers(data);
 }
 
 function renderDegreeSummary(highest, lowest) {
@@ -816,6 +818,7 @@ function renderComponents(components) {
 function renderPathResult(result, start, end) {
     elements.pathResult.textContent = "";
     elements.pathResult.className = "path-result";
+    clearPathHighlight();
 
     if (
         result === null ||
@@ -881,6 +884,7 @@ function renderPathResult(result, start, end) {
     }
 
     elements.pathResult.append(title, steps, distance);
+    highlightShortestPath(path);
 }
 
 function resetAnalysisView() {
@@ -909,10 +913,12 @@ function resetAnalysisView() {
         "Kelompok anggota yang saling terhubung akan ditampilkan di sini."
     );
 
+    clearAnalysisMarkers();
     hideMessage(elements.analysisMessage);
 }
 
 function resetPathView() {
+    clearPathHighlight();
     elements.pathResult.className = "empty-state";
     elements.pathResult.textContent = "";
 

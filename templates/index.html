@@ -59,20 +59,42 @@
 
             <div class="message" id="data-message" role="status" aria-live="polite" hidden></div>
 
-            <div class="graph-placeholder" id="graph-workspace">
-                <svg class="graph-placeholder__icon" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
-                    <circle cx="20" cy="40" r="7"></circle>
-                    <circle cx="60" cy="18" r="7"></circle>
-                    <circle cx="60" cy="62" r="7"></circle>
-                    <circle cx="100" cy="40" r="7"></circle>
-                    <path d="M27 37l26-15M27 43l26 15M67 21l26 15M67 59l26-15M60 25v30"></path>
-                </svg>
-                <p class="graph-placeholder__title">Visualisasi graf belum tersedia</p>
-                <p class="graph-placeholder__text">
-                    Area ini akan menampilkan simpul anggota dan sisi hubungan setelah
-                    data jaringan tersedia.
-                </p>
+            <div class="graph-stage">
+                <div class="graph-placeholder" id="graph-workspace">
+                    <svg class="graph-placeholder__icon" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+                        <circle cx="20" cy="40" r="7"></circle>
+                        <circle cx="60" cy="18" r="7"></circle>
+                        <circle cx="60" cy="62" r="7"></circle>
+                        <circle cx="100" cy="40" r="7"></circle>
+                        <path d="M27 37l26-15M27 43l26 15M67 21l26 15M67 59l26-15M60 25v30"></path>
+                    </svg>
+                    <p class="graph-placeholder__title">Visualisasi graf belum tersedia</p>
+                    <p class="graph-placeholder__text">
+                        Area ini akan menampilkan simpul anggota dan sisi hubungan setelah
+                        data jaringan tersedia.
+                    </p>
+                </div>
+
+                <div class="graph-canvas" id="graph-canvas" role="img"
+                     aria-label="Visualisasi jaringan komunitas" hidden></div>
             </div>
+
+            <p class="message message--error" id="graph-error" role="status" aria-live="polite" hidden></p>
+
+            <ul class="graph-legend" id="graph-legend" aria-label="Keterangan visualisasi graf" hidden>
+                <li class="graph-legend__item">
+                    <span class="graph-legend__swatch graph-legend__swatch--component" aria-hidden="true"></span>
+                    Warna berbeda menandai kelompok berbeda
+                </li>
+                <li class="graph-legend__item">
+                    <span class="graph-legend__swatch graph-legend__swatch--isolated" aria-hidden="true"></span>
+                    Anggota belum terhubung
+                </li>
+                <li class="graph-legend__item">
+                    <span class="graph-legend__swatch graph-legend__swatch--path" aria-hidden="true"></span>
+                    Jalur terpendek
+                </li>
+            </ul>
         </section>
 
         <section class="panel" id="members" aria-labelledby="members-title">
@@ -251,6 +273,8 @@
 
     <script src="{{ url_for('static', filename='js/storage.js') }}"></script>
     <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/cytoscape.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
