@@ -216,27 +216,27 @@
 
 ### Tasks
 
-- [ ] Menginstal pytest.
-- [ ] Membuat tests/test_algorithms.py.
-- [ ] Menguji Degree.
-- [ ] Menguji DFS.
-- [ ] Menguji Connected Components.
-- [ ] Menguji BFS.
-- [ ] Menguji shortest path.
-- [ ] Menguji graf kosong.
-- [ ] Menguji graf dengan satu simpul.
-- [ ] Menguji beberapa komponen terpisah.
-- [ ] Menguji relasi tidak valid.
-- [ ] Menguji API.
-- [ ] Menguji integrasi frontend dan backend.
-- [ ] Memperbaiki bug yang ditemukan.
+- [x] Menginstal pytest.
+- [x] Membuat tests/test_algorithms.py.
+- [x] Menguji Degree.
+- [x] Menguji DFS.
+- [x] Menguji Connected Components.
+- [x] Menguji BFS.
+- [x] Menguji shortest path.
+- [x] Menguji graf kosong.
+- [x] Menguji graf dengan satu simpul.
+- [x] Menguji beberapa komponen terpisah.
+- [x] Menguji relasi tidak valid.
+- [x] Menguji API.
+- [x] Menguji integrasi frontend dan backend.
+- [x] Memperbaiki bug yang ditemukan.
 
 ### Acceptance Criteria
 
-- Seluruh pengujian algoritma lulus.
-- Hasil sesuai dataset pada PRD.md.
-- Tidak terdapat bug kritis pada fitur utama.
-- Data tidak valid ditangani dengan benar.
+- [x] Seluruh pengujian algoritma lulus.
+- [x] Hasil sesuai dataset pada PRD.md.
+- [x] Tidak terdapat bug kritis pada fitur utama.
+- [x] Data tidak valid ditangani dengan benar.
 
 ---
 

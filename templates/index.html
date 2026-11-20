@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <a class="skip-link" href="#main">Lewati ke konten utama</a>
+
     <header class="app-header">
         <div class="container app-header__inner">
             <div class="app-brand">
@@ -38,7 +40,7 @@
         </div>
     </header>
 
-    <main class="container app-main">
+    <main class="container app-main" id="main">
         <section class="panel panel--graph" id="graph" aria-labelledby="graph-title">
             <div class="panel__header panel__header--row">
                 <div class="panel__header-copy">
@@ -75,7 +77,7 @@
                     </p>
                 </div>
 
-                <div class="graph-canvas" id="graph-canvas" role="img"
+                <div class="graph-canvas" id="graph-canvas" role="img" tabindex="0"
                      aria-label="Visualisasi jaringan komunitas" hidden></div>
             </div>
 

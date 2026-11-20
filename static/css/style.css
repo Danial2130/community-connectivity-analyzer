@@ -59,6 +59,28 @@ body {
     padding: 0 24px;
 }
 
+/* Tautan lompat ke konten utama. Tersembunyi sampai menerima fokus keyboard. */
+.skip-link {
+    position: absolute;
+    top: -60px;
+    left: 16px;
+    z-index: 100;
+    padding: 10px 14px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    background-color: var(--color-primary-dark);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.skip-link:focus {
+    top: 12px;
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
 /* --------------------------------------------------------------------------
    Header
    -------------------------------------------------------------------------- */
