@@ -35,6 +35,16 @@ let pathRequestId = 0;
 let isAnalyzing = false;
 let isFindingPath = false;
 
+// Status analisis menggambarkan kondisi UI, bukan hasil perhitungan backend.
+let analysisState = "idle";
+
+const ANALYSIS_STATUS_TEXT = {
+    idle: "Belum dianalisis",
+    running: "Sedang dianalisis",
+    success: "Analisis berhasil",
+    stale: "Data berubah setelah analisis terakhir"
+};
+
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
@@ -50,12 +60,15 @@ function init() {
     elements.relationshipMessage = document.getElementById("relationship-message");
     elements.relationshipList = document.getElementById("relationship-list");
     elements.relationshipEmpty = document.getElementById("relationship-empty");
+    elements.relationshipEmptyTitle = elements.relationshipEmpty.querySelector(".empty-state__title");
+    elements.relationshipEmptyText = elements.relationshipEmpty.querySelector(".empty-state__text");
 
     elements.loadSampleButton = document.getElementById("load-sample-button");
     elements.resetButton = document.getElementById("reset-button");
     elements.dataMessage = document.getElementById("data-message");
 
     elements.analyzeButton = document.getElementById("analyze-button");
+    elements.analysisStatus = document.getElementById("analysis-status");
     elements.analysisMessage = document.getElementById("analysis-message");
     elements.analysisNote = document.getElementById("analysis-note");
     elements.statVertexCount = document.getElementById("stat-vertex-count");
@@ -81,6 +94,7 @@ function init() {
 
     bindEvents();
     restoreState();
+    setAnalysisStatus("idle");
     renderAll();
 }
 
@@ -399,6 +413,16 @@ function renderRelationships() {
     elements.relationshipList.hidden = state.edges.length === 0;
     elements.relationshipEmpty.hidden = state.edges.length > 0;
 
+    if (state.vertices.length === 0) {
+        elements.relationshipEmptyTitle.textContent = "Belum ada anggota";
+        elements.relationshipEmptyText.textContent =
+            "Tambahkan anggota terlebih dahulu untuk membuat hubungan.";
+    } else {
+        elements.relationshipEmptyTitle.textContent = "Belum ada hubungan";
+        elements.relationshipEmptyText.textContent =
+            "Pilih dua anggota di atas untuk membuat hubungan pertama.";
+    }
+
     state.edges.forEach((edge, index) => {
         const sourceVertex = findVertex(edge.source);
         const targetVertex = findVertex(edge.target);
@@ -438,27 +462,31 @@ function renderRelationships() {
 function renderRelationshipOptions() {
     const placeholder = state.vertices.length === 0 ? "Belum ada anggota" : "Pilih anggota";
 
+    // Hubungan menampilkan nama saja; ID tetap disimpan sebagai value option.
     fillSelect(
         elements.relationshipSource,
         placeholder,
-        elements.relationshipSource.value
+        elements.relationshipSource.value,
+        false
     );
     fillSelect(
         elements.relationshipTarget,
         placeholder,
-        elements.relationshipTarget.value
+        elements.relationshipTarget.value,
+        false
     );
 }
 
 function renderShortestPathOptions() {
     const placeholder = state.vertices.length === 0 ? "Belum ada anggota" : "Pilih anggota";
 
-    fillSelect(elements.pathStart, placeholder, elements.pathStart.value);
-    fillSelect(elements.pathEnd, placeholder, elements.pathEnd.value);
+    // Sama seperti dropdown Hubungan: nama saja yang terlihat, ID tetap di value.
+    fillSelect(elements.pathStart, placeholder, elements.pathStart.value, false);
+    fillSelect(elements.pathEnd, placeholder, elements.pathEnd.value, false);
     updateControls();
 }
 
-function fillSelect(selectElement, placeholderText, selectedValue) {
+function fillSelect(selectElement, placeholderText, selectedValue, includeId = true) {
     selectElement.textContent = "";
 
     const placeholderOption = document.createElement("option");
@@ -469,7 +497,10 @@ function fillSelect(selectElement, placeholderText, selectedValue) {
     for (const vertex of state.vertices) {
         const option = document.createElement("option");
         option.value = vertex.id;
-        option.textContent = vertex.id + " \u2014 " + vertex.name;
+        // Teks yang terlihat bisa disesuaikan, tetapi value selalu ID simpul.
+        option.textContent = includeId
+            ? vertex.id + " \u2014 " + vertex.name
+            : vertex.name;
         selectElement.append(option);
     }
 
@@ -491,6 +522,12 @@ function createDeleteButton(accessibilityLabel, onClick) {
 // Integrasi API: analisis dan shortest path
 // ---------------------------------------------------------------------------
 
+function setAnalysisStatus(status) {
+    analysisState = status;
+    elements.analysisStatus.dataset.state = status;
+    elements.analysisStatus.textContent = ANALYSIS_STATUS_TEXT[status];
+}
+
 async function handleAnalyze() {
     if (isAnalyzing) {
         return;
@@ -499,6 +536,7 @@ async function handleAnalyze() {
     const requestId = analysisRequestId + 1;
     analysisRequestId = requestId;
     isAnalyzing = true;
+    setAnalysisStatus("running");
 
     resetAnalysisView();
     updateControls();
@@ -521,6 +559,7 @@ async function handleAnalyze() {
         }
 
         renderAnalysis(data);
+        setAnalysisStatus("success");
         showMessage(elements.analysisMessage, "Analisis selesai.", "success");
     } catch (error) {
         if (requestId !== analysisRequestId) {
@@ -528,6 +567,7 @@ async function handleAnalyze() {
         }
 
         resetAnalysisView();
+        setAnalysisStatus("idle");
         showMessage(
             elements.analysisMessage,
             getClientErrorMessage(error),
@@ -622,6 +662,8 @@ function handlePathSelectionChange() {
 // Membatalkan hasil lama ketika data graf berubah. Request yang masih
 // berjalan akan diabaikan karena nomor request sudah berubah.
 function handleGraphChanged() {
+    const previousStatus = analysisState;
+
     analysisRequestId += 1;
     pathRequestId += 1;
     isAnalyzing = false;
@@ -634,6 +676,14 @@ function handleGraphChanged() {
 
     resetAnalysisView();
     resetPathView();
+
+    // Data yang diubah membuat hasil lama tidak relevan lagi.
+    if (previousStatus === "success" || previousStatus === "stale") {
+        setAnalysisStatus("stale");
+    } else {
+        setAnalysisStatus("idle");
+    }
+
     updateControls();
 }
 
@@ -724,8 +774,8 @@ function renderDegreeList(degrees) {
     ) {
         renderEmptyState(
             elements.degreeList,
-            "Belum ada hasil",
-            "Jumlah koneksi setiap anggota akan ditampilkan setelah analisis dijalankan."
+            "Belum ada hasil analisis",
+            "Jalankan analisis untuk melihat jumlah koneksi setiap anggota."
         );
         return;
     }
@@ -899,18 +949,18 @@ function resetAnalysisView() {
 
     renderEmptyState(
         elements.degreeList,
-        null,
-        "Jumlah koneksi setiap anggota akan ditampilkan setelah analisis dijalankan."
+        "Belum ada hasil analisis",
+        "Jalankan analisis untuk melihat jumlah koneksi setiap anggota."
     );
     renderEmptyState(
         elements.isolatedList,
-        null,
-        "Anggota yang belum terhubung akan ditampilkan di sini."
+        "Belum ada hasil analisis",
+        "Anggota dengan degree nol akan ditampilkan setelah analisis."
     );
     renderEmptyState(
         elements.componentList,
-        null,
-        "Kelompok anggota yang saling terhubung akan ditampilkan di sini."
+        "Belum ada hasil analisis",
+        "Kelompok anggota yang saling terhubung akan ditampilkan setelah analisis."
     );
 
     clearAnalysisMarkers();

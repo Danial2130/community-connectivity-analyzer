@@ -22,11 +22,9 @@
                         <path d="M8.1 6.8l7.5 0.5M7.4 8l3.2 7.7M16.6 9.2l-3.2 6.6"></path>
                     </svg>
                 </span>
-                <div>
+                <div class="app-brand__copy">
+                    <p class="app-brand__eyebrow">Swiss Network Atlas / CCA</p>
                     <h1 class="app-brand__title">Community Connectivity Analyzer</h1>
-                    <p class="app-brand__subtitle">
-                        Analisis keterhubungan antaranggota komunitas menggunakan konsep teori graf.
-                    </p>
                 </div>
             </div>
 
@@ -37,25 +35,134 @@
                 <a href="#analysis">Analisis</a>
                 <a href="#shortest-path">Jalur Terpendek</a>
             </nav>
+
+            <div class="app-header__actions">
+                <button class="button button--primary button--small" id="load-sample-button" type="button">Muat contoh</button>
+                <button class="button button--danger button--quiet button--small" id="reset-button" type="button">Reset</button>
+            </div>
         </div>
     </header>
 
     <main class="container app-main" id="main">
+        <div class="workspace" aria-label="Workspace analisis">
+            <section class="panel" id="members" aria-labelledby="members-title">
+                <div class="panel__header">
+                    <span class="section-index" aria-hidden="true">01</span>
+                    <div class="panel__heading">
+                        <p class="panel__kicker">Input / Entitas</p>
+                        <h2 class="panel__title" id="members-title">Anggota</h2>
+                    </div>
+                </div>
+
+                <form class="form" id="member-form" autocomplete="off">
+                    <div class="field">
+                        <label class="field__label" for="member-name">Nama anggota</label>
+                        <input class="field__control" type="text" id="member-name" name="name" placeholder="Contoh: Andi">
+                    </div>
+                    <button class="button button--primary" id="member-submit" type="submit">
+                        Tambahkan Anggota
+                    </button>
+                    <div class="message" id="member-message" role="status" aria-live="polite" hidden></div>
+                </form>
+
+                <div class="empty-state" id="member-empty">
+                    <p class="empty-state__title">Belum ada anggota</p>
+                    <p class="empty-state__text">Tambahkan anggota pertama untuk mulai membangun graf.</p>
+                </div>
+                <ul class="entity-list" id="member-list" hidden></ul>
+            </section>
+
+            <section class="panel" id="relationships" aria-labelledby="relationships-title">
+                <div class="panel__header">
+                    <span class="section-index" aria-hidden="true">02</span>
+                    <div class="panel__heading">
+                        <p class="panel__kicker">Input / Relasi</p>
+                        <h2 class="panel__title" id="relationships-title">Hubungan</h2>
+                    </div>
+                </div>
+
+                <form class="form" id="relationship-form">
+                    <div class="field">
+                        <label class="field__label" for="relationship-source">Anggota pertama</label>
+                        <select class="field__control" id="relationship-source" name="source">
+                            <option value="">Belum ada anggota</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field__label" for="relationship-target">Anggota kedua</label>
+                        <select class="field__control" id="relationship-target" name="target">
+                            <option value="">Belum ada anggota</option>
+                        </select>
+                    </div>
+                    <button class="button button--primary" id="relationship-submit" type="submit">
+                        Tambahkan Hubungan
+                    </button>
+                    <div class="message" id="relationship-message" role="status" aria-live="polite" hidden></div>
+                </form>
+
+                <div class="empty-state" id="relationship-empty">
+                    <p class="empty-state__title">Belum ada hubungan</p>
+                    <p class="empty-state__text">Pilih dua anggota di atas untuk membuat hubungan pertama.</p>
+                </div>
+                <ul class="entity-list" id="relationship-list" hidden></ul>
+            </section>
+
+            <section class="panel panel--path" id="shortest-path" aria-labelledby="shortest-path-title">
+                <div class="panel__header">
+                    <span class="section-index" aria-hidden="true">03</span>
+                    <div class="panel__heading">
+                        <p class="panel__kicker">Prosedur / Jalur</p>
+                        <h2 class="panel__title" id="shortest-path-title">Jalur Terpendek</h2>
+                    </div>
+                </div>
+
+                <div class="path-layout">
+                    <div class="path-layout__input">
+                        <form class="form" id="shortest-path-form">
+                            <div class="field">
+                                <label class="field__label" for="path-start">Anggota awal</label>
+                                <select class="field__control" id="path-start" name="start" disabled>
+                                    <option value="">Belum ada anggota</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="field__label" for="path-end">Anggota tujuan</label>
+                                <select class="field__control" id="path-end" name="end" disabled>
+                                    <option value="">Belum ada anggota</option>
+                                </select>
+                            </div>
+                            <button class="button button--primary" id="path-submit" type="submit" disabled>
+                                Cari Jalur
+                            </button>
+                            <p class="form-note" id="path-note">
+                                Tambahkan anggota untuk mencari jalur.
+                            </p>
+                        </form>
+
+                        <div class="message" id="path-message" role="status" aria-live="polite" hidden></div>
+                    </div>
+
+                    <div class="path-layout__result">
+                        <div class="empty-state" id="path-result" role="status" aria-live="polite">
+                            <p class="empty-state__title">Belum ada hasil</p>
+                            <p class="empty-state__text">
+                                Jalur, urutan anggota, dan jarak akan ditampilkan di sini.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
         <section class="panel panel--graph" id="graph" aria-labelledby="graph-title">
-            <div class="panel__header panel__header--row">
-                <div class="panel__header-copy">
+            <div class="panel__header">
+                <span class="section-index" aria-hidden="true">04</span>
+                <div class="panel__heading">
+                    <p class="panel__kicker">Peta / Graf</p>
                     <h2 class="panel__title" id="graph-title">Visualisasi Jaringan</h2>
                     <p class="panel__description">
                         Struktur hubungan antaranggota komunitas ditampilkan dalam bentuk graf.
                     </p>
-                </div>
-                <div class="panel__actions">
-                    <button class="button button--secondary" id="load-sample-button" type="button">
-                        Muat Data Contoh
-                    </button>
-                    <button class="button button--danger" id="reset-button" type="button">
-                        Reset Data
-                    </button>
                 </div>
             </div>
 
@@ -72,8 +179,8 @@
                     </svg>
                     <p class="graph-placeholder__title">Visualisasi graf belum tersedia</p>
                     <p class="graph-placeholder__text">
-                        Area ini akan menampilkan simpul anggota dan sisi hubungan setelah
-                        data jaringan tersedia.
+                        Muat data contoh atau tambahkan anggota dan hubungan untuk
+                        melihat simpul dan sisi graf di sini.
                     </p>
                 </div>
 
@@ -99,72 +206,28 @@
             </ul>
         </section>
 
-        <section class="panel" id="members" aria-labelledby="members-title">
-            <div class="panel__header">
-                <h2 class="panel__title" id="members-title">Anggota</h2>
-                <p class="panel__description">
-                    Tambahkan anggota komunitas yang akan dianalisis.
-                </p>
-            </div>
-
-            <form class="form" id="member-form" autocomplete="off">
-                <div class="field">
-                    <label class="field__label" for="member-name">Nama anggota</label>
-                    <input class="field__control" type="text" id="member-name" name="name" placeholder="Contoh: Andi">
+        <section class="panel panel--analysis" id="analysis" aria-labelledby="analysis-title">
+            <div class="panel__header panel__header--row">
+                <span class="section-index" aria-hidden="true">05</span>
+                <div class="panel__header-copy">
+                    <p class="panel__kicker">Laporan / Metrik</p>
+                    <h2 class="panel__title" id="analysis-title">Hasil Analisis</h2>
+                    <p class="panel__description">
+                        Ringkasan struktur jaringan berdasarkan perhitungan teori graf.
+                    </p>
                 </div>
-                <button class="button button--primary" id="member-submit" type="submit">
-                    Tambahkan Anggota
-                </button>
-                <div class="message" id="member-message" role="status" aria-live="polite" hidden></div>
-            </form>
-
-            <div class="empty-state" id="member-empty">
-                <p class="empty-state__title">Belum ada anggota</p>
-                <p class="empty-state__text">Daftar anggota yang ditambahkan akan muncul di sini.</p>
-            </div>
-            <ul class="entity-list" id="member-list" hidden></ul>
-        </section>
-
-        <section class="panel" id="relationships" aria-labelledby="relationships-title">
-            <div class="panel__header">
-                <h2 class="panel__title" id="relationships-title">Hubungan</h2>
-                <p class="panel__description">
-                    Hubungkan dua anggota. Setiap hubungan bersifat dua arah.
-                </p>
-            </div>
-
-            <form class="form" id="relationship-form">
-                <div class="field">
-                    <label class="field__label" for="relationship-source">Anggota pertama</label>
-                    <select class="field__control" id="relationship-source" name="source">
-                        <option value="">Belum ada anggota</option>
-                    </select>
+                <div class="analysis-meta">
+                    <span class="analysis-status" id="analysis-status" role="status"
+                          aria-live="polite" data-state="idle">Belum dianalisis</span>
                 </div>
-                <div class="field">
-                    <label class="field__label" for="relationship-target">Anggota kedua</label>
-                    <select class="field__control" id="relationship-target" name="target">
-                        <option value="">Belum ada anggota</option>
-                    </select>
+                <div class="panel__actions panel__actions--analysis">
+                    <button class="button button--primary" id="analyze-button" type="button" disabled>
+                        Jalankan Analisis
+                    </button>
+                    <p class="form-note" id="analysis-note">
+                        Tambahkan anggota untuk menjalankan analisis.
+                    </p>
                 </div>
-                <button class="button button--primary" id="relationship-submit" type="submit">
-                    Tambahkan Hubungan
-                </button>
-                <div class="message" id="relationship-message" role="status" aria-live="polite" hidden></div>
-            </form>
-
-            <div class="empty-state" id="relationship-empty">
-                <p class="empty-state__title">Belum ada hubungan</p>
-                <p class="empty-state__text">Daftar hubungan antaranggota akan muncul di sini.</p>
-            </div>
-            <ul class="entity-list" id="relationship-list" hidden></ul>
-        </section>
-
-        <section class="panel" id="analysis" aria-labelledby="analysis-title">
-            <div class="panel__header">
-                <h2 class="panel__title" id="analysis-title">Hasil Analisis</h2>
-                <p class="panel__description">
-                    Ringkasan struktur jaringan berdasarkan perhitungan teori graf.
-                </p>
             </div>
 
             <div class="message" id="analysis-message" role="status" aria-live="polite" hidden></div>
@@ -188,87 +251,46 @@
                 </div>
             </dl>
 
-            <div class="analysis-detail">
-                <h3 class="analysis-detail__title">Rincian Degree</h3>
-                <div class="analysis-summary" id="degree-summary" hidden>
-                    <p class="analysis-summary__item">
-                        <span class="analysis-summary__label">Koneksi terbanyak</span>
-                        <span class="analysis-summary__value" id="highest-degree">&mdash;</span>
-                    </p>
-                    <p class="analysis-summary__item">
-                        <span class="analysis-summary__label">Koneksi paling sedikit</span>
-                        <span class="analysis-summary__value" id="lowest-degree">&mdash;</span>
-                    </p>
+            <div class="analysis-details">
+                <div class="analysis-detail">
+                    <h3 class="analysis-detail__title">Rincian Degree</h3>
+                    <div class="analysis-summary" id="degree-summary" hidden>
+                        <p class="analysis-summary__item">
+                            <span class="analysis-summary__label">Koneksi terbanyak</span>
+                            <span class="analysis-summary__value" id="highest-degree">&mdash;</span>
+                        </p>
+                        <p class="analysis-summary__item">
+                            <span class="analysis-summary__label">Koneksi paling sedikit</span>
+                            <span class="analysis-summary__value" id="lowest-degree">&mdash;</span>
+                        </p>
+                    </div>
+                    <div class="empty-state empty-state--compact" id="degree-list">
+                        <p class="empty-state__title">Belum ada hasil analisis</p>
+                        <p class="empty-state__text">
+                            Jalankan analisis untuk melihat jumlah koneksi setiap anggota.
+                        </p>
+                    </div>
                 </div>
-                <div class="empty-state empty-state--compact" id="degree-list">
-                    <p class="empty-state__text">
-                        Jumlah koneksi setiap anggota akan ditampilkan setelah analisis dijalankan.
-                    </p>
+
+                <div class="analysis-detail">
+                    <h3 class="analysis-detail__title">Anggota Belum Terhubung</h3>
+                    <div class="empty-state empty-state--compact" id="isolated-list">
+                        <p class="empty-state__title">Belum ada hasil analisis</p>
+                        <p class="empty-state__text">
+                            Anggota dengan degree nol akan ditampilkan setelah analisis.
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="analysis-detail">
-                <h3 class="analysis-detail__title">Anggota Belum Terhubung</h3>
-                <div class="empty-state empty-state--compact" id="isolated-list">
-                    <p class="empty-state__text">
-                        Anggota yang belum terhubung akan ditampilkan di sini.
-                    </p>
+                <div class="analysis-detail">
+                    <h3 class="analysis-detail__title">Connected Components</h3>
+                    <div class="empty-state empty-state--compact" id="component-list">
+                        <p class="empty-state__title">Belum ada hasil analisis</p>
+                        <p class="empty-state__text">
+                            Kelompok anggota yang saling terhubung akan ditampilkan setelah analisis.
+                        </p>
+                    </div>
                 </div>
-            </div>
-
-            <div class="analysis-detail">
-                <h3 class="analysis-detail__title">Connected Components</h3>
-                <div class="empty-state empty-state--compact" id="component-list">
-                    <p class="empty-state__text">
-                        Kelompok anggota yang saling terhubung akan ditampilkan di sini.
-                    </p>
-                </div>
-            </div>
-
-            <button class="button button--primary" id="analyze-button" type="button" disabled>
-                Jalankan Analisis
-            </button>
-            <p class="form-note" id="analysis-note">
-                Tambahkan anggota untuk menjalankan analisis.
-            </p>
-        </section>
-
-        <section class="panel" id="shortest-path" aria-labelledby="shortest-path-title">
-            <div class="panel__header">
-                <h2 class="panel__title" id="shortest-path-title">Jalur Terpendek</h2>
-                <p class="panel__description">
-                    Cari jalur hubungan terpendek antara dua anggota.
-                </p>
-            </div>
-
-            <form class="form" id="shortest-path-form">
-                <div class="field">
-                    <label class="field__label" for="path-start">Anggota awal</label>
-                    <select class="field__control" id="path-start" name="start" disabled>
-                        <option value="">Belum ada anggota</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label class="field__label" for="path-end">Anggota tujuan</label>
-                    <select class="field__control" id="path-end" name="end" disabled>
-                        <option value="">Belum ada anggota</option>
-                    </select>
-                </div>
-                <button class="button button--primary" id="path-submit" type="submit" disabled>
-                    Cari Jalur
-                </button>
-                <p class="form-note" id="path-note">
-                    Tambahkan anggota untuk mencari jalur.
-                </p>
-            </form>
-
-            <div class="message" id="path-message" role="status" aria-live="polite" hidden></div>
-
-            <div class="empty-state" id="path-result" role="status" aria-live="polite">
-                <p class="empty-state__title">Belum ada hasil</p>
-                <p class="empty-state__text">
-                    Jalur, urutan anggota, dan jarak akan ditampilkan di sini.
-                </p>
             </div>
         </section>
     </main>
